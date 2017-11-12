@@ -1,0 +1,66 @@
+<html>
+<configuration>
+    <system.webServer>
+        <handlers>
+            <!-- indicates that the app.js file is a node.js application to be handled by the iisnode module -->
+            <add name="iisnode" path="server.js" verb="*" modules="iisnode" />
+        </handlers>
+    </system.webServer>
+</configuration>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {
+            'packages': ['corechart']
+        });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawSheetName() {
+            var query = new google.visualization.Query("https://docs.google.com/spreadsheets/d/1eixMKrxvQhGK4-1mSEMtiFDOR35rWasws38I1OZuFVY/edit#gid=0");
+            query.setQuery("select A, B")
+            query.send(handleSampleDataQueryResponse);
+        }
+
+        function handleSampleDataQueryResponse(response) {
+            if (response.isError()) {
+                alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+                return;
+            }
+
+            var data = response.getDataTable();
+            var options = {
+                hAxis: {
+                    title: 'Time'
+                },
+                vAxis: {
+                    title: 'Temperature (degree celsius)'
+                },
+                height: 500,
+                curveType: 'function'
+            };
+            var chart = new google.visualization.LineChart(document.getElementById('chart'));
+            chart.draw(data, options);
+        }
+
+        function drawChart() {
+            drawSheetName();
+            //setInterval(drawSheetName, 500);
+        }
+    </script>
+    <style>
+        font-family:Roboto;
+        text {
+            font-family: Roboto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align:center;">Temperature measured by arduino</h1>
+    <div id="chart" style="font-family:Roboto;width: 1000px; height: 750px;margin: 0 auto 0 auto;"></div>
+</body>
+
+</html>
